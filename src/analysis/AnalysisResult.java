@@ -1,4 +1,4 @@
-package analise;
+package analysis;
 
 public class AnalysisResult {
 }
