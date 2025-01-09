@@ -1,4 +1,4 @@
-package analysis;
+package com.bucsan.analysis;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

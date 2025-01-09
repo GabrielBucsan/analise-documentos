@@ -1,4 +1,4 @@
-package analysis;
+package com.bucsan.analysis;
 
 public class GovDocument {
 
