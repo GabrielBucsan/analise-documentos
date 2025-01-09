@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Main {
@@ -17,37 +19,17 @@ public class Main {
 
         String[] expressoesChave = new String[]{"aten..o b.sica", "aten..o prim.ria"};
         AnalysisHelper analysisHelper = new AnalysisHelper();
-        FileHelper reader = new FileHelper();
-        AnalysisResult result = new AnalysisResult(expressoesChave);
-
-        Path dir = Paths.get("./src/resources");
+        Path dir = Paths.get("./src/main/resources");
+        List<AnalysisResult> results = new ArrayList<>();
 
         try {
             try (Stream<Path> paths = Files.list(dir)) {
-                paths.filter(Files::isRegularFile)
-                        .forEach(file -> {
-
-                            GovDocument documento = null;
-                            try {
-                                documento = reader.readXmlFile(new File("").getAbsoluteFile() + "/src/resources/" + file.getFileName().toString());
-                            } catch (Exception e) {
-                                System.out.println("Não foi possível processar o arquivo " + file.getFileName());
-                            }
-
-                            if(documento != null) {
-                                if(analysisHelper.analyseFile(documento, expressoesChave)) {
-                                    result.countFileContainingKeyword(file.getFileName().toString());
-                                }
-                            }
-
-                            result.countFile();
-                        });
+                paths.filter(Files::isDirectory)
+                        .forEach(folderPath -> results.add(analysisHelper.analyseFolder(folderPath, expressoesChave)));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        result.printResult();
 
     }
 }

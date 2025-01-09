@@ -5,12 +5,14 @@ import java.util.List;
 
 public class AnalysisResult {
 
+    String folderName;
     int totalFiles = 0;
     int filesContainingKeywords = 0;
-    List<String> fileNames = new ArrayList<>();
+    List<GovDocument> files = new ArrayList<>();
     String[] expressoesChave;
 
-    public AnalysisResult(String[] expressoesChave) {
+    public AnalysisResult(String folderName, String[] expressoesChave) {
+        this.folderName = folderName;
         this.expressoesChave = expressoesChave;
     }
 
@@ -18,24 +20,13 @@ public class AnalysisResult {
         totalFiles++;
     }
 
-    public void countFileContainingKeyword(String fileName) {
+    public void countFileContainingKeyword(GovDocument document) {
         filesContainingKeywords++;
-        fileNames.add(fileName);
+        files.add(document);
     }
 
-    public void printResult() {
-        System.out.println("==============================================");
-        System.out.println("Pesquisa concluída");
-        System.out.println("Expressões utilizadas na busca: ");
-        for(String expressao : expressoesChave) {
-            System.out.println("     - " + expressao);
-        }
-        System.out.println("Arquivos analisados: " + totalFiles);
-        System.out.println("Arquivos que contém pelo menos uma das expressões pesquisadas: " + filesContainingKeywords);
-        for(String fileName : fileNames) {
-            System.out.println("     - " + fileName);
-        }
-        System.out.println("==============================================");
+    public void toXlsx() {
+
     }
 
 }
