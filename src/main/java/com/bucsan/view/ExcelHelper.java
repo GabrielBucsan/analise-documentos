@@ -55,6 +55,11 @@ public class ExcelHelper {
         objects.add("Tipo de norma");
         objects.add("Nome da norma");
         objects.add("Página do DOU");
+        objects.add("Seção do DOU");
+        objects.add("Data de publicação no DOU");
+        objects.add("Órgão responsável pela publicação");
+        objects.add("Ementa");
+        objects.add("Arquivo");
 
         for(int i = 0; i < objects.size(); i++) {
             Cell cell = row.createCell(i);
@@ -69,6 +74,11 @@ public class ExcelHelper {
         objects.add(document.getName());
         objects.add(document.getIdentifica());
         objects.add(document.getNumberPage());
+        objects.add(document.getPubName());
+        objects.add(document.getPubDate());
+        objects.add(document.getArtCategory());
+        objects.add(document.getEmenta());
+        objects.add(document.getArquivo());
 
         for(int i = 0; i < objects.size(); i++) {
             Cell cell = row.createCell(i);

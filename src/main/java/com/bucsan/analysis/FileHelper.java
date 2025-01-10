@@ -49,6 +49,7 @@ public class FileHelper {
                 govDocument.setArtType(article.getAttribute("artType"));
                 govDocument.setPubDate(article.getAttribute("pubDate"));
                 govDocument.setArtCategory(article.getAttribute("artCategory"));
+                govDocument.setArquivo(file.toString());
 
                 NodeList bodies = article.getElementsByTagName("body");
                 for (int j = 0; j < bodies.getLength(); j++) {
@@ -59,6 +60,7 @@ public class FileHelper {
 
                         govDocument.setIdentifica(body.getElementsByTagName("Identifica").item(0).getTextContent());
                         govDocument.setTexto(body.getElementsByTagName("Texto").item(0).getTextContent());
+                        govDocument.setEmenta(body.getElementsByTagName("Ementa").item(0).getTextContent());
                     }
                 }
             }
