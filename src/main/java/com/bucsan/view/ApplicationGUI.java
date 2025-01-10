@@ -43,6 +43,7 @@ public class ApplicationGUI {
                 List<AnalysisResult> results = analysisHelper.runAnalysis(directoryPath, expressoesChave);
                 ExcelHelper excelHelper = new ExcelHelper();
                 excelHelper.exportResultsAsXlsx(results, "./");
+                fileHelper.clearErros(directoryPath);
                 fileHelper.saveExpressions(searchExpression, directoryPath);
                 fileHelper.saveErrorsToFile(results);
             }

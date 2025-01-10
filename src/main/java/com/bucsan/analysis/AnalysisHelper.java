@@ -44,7 +44,7 @@ public class AnalysisHelper {
                         try {
                             documento = reader.readXmlFile(file);
                         } catch (Exception e) {
-                            System.out.println("Não foi possível processar o arquivo " + file.getFileName());
+                            result.addError(file.getFileName() + " - " + e.getMessage());
                         }
 
                         if(documento != null) {

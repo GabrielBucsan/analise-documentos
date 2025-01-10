@@ -45,9 +45,7 @@ public class FileHelper {
                 Element article = (Element) articleNode;
 
                 govDocument.setNumberPage(article.getAttribute("numberPage"));
-                govDocument.setPubName(article.getAttribute("pubName"));
                 govDocument.setName(article.getAttribute("name"));
-                govDocument.setArtType(article.getAttribute("artType"));
                 govDocument.setPubDate(article.getAttribute("pubDate"));
                 govDocument.setArtCategory(article.getAttribute("artCategory"));
                 govDocument.setArquivo(file.toString());
@@ -86,12 +84,39 @@ public class FileHelper {
 
     public void saveErrorsToFile(List<AnalysisResult> results) {
         for(AnalysisResult result : results) {
+            if(result.getErrors().isEmpty()) {
+                continue;
+            }
             try (FileWriter writer = new FileWriter("error-" + result.folderName + ".err")) {
                 for(String error : result.getErrors()) {
                     writer.write(error + System.lineSeparator());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    public void clearErros(String directoryPath) {
+        File diretorio = new File(directoryPath);
+
+        if (!diretorio.exists() || !diretorio.isDirectory()) {
+            System.out.println("O caminho especificado não é um diretório válido.");
+            return;
+        }
+
+        File[] arquivos = diretorio.listFiles((dir, nome) -> nome.endsWith("err"));
+
+        if (arquivos == null || arquivos.length == 0) {
+            System.out.println("Nenhum arquivo com a extensão .err foi encontrado.");
+            return;
+        }
+
+        for (File arquivo : arquivos) {
+            if (arquivo.delete()) {
+                System.out.println("Arquivo excluído: " + arquivo.getName());
+            } else {
+                System.out.println("Não foi possível excluir o arquivo: " + arquivo.getName());
             }
         }
     }

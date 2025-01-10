@@ -3,10 +3,8 @@ package com.bucsan.analysis;
 public class GovDocument {
 
     String numberPage;
-    String pubName;
     String name;
     String pubDate;
-    String artType;
     String artCategory;
     String identifica;
     String ementa;
@@ -17,20 +15,12 @@ public class GovDocument {
         this.numberPage = numberPage;
     }
 
-    public void setPubName(String pubName) {
-        this.pubName = pubName;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
 
     public void setPubDate(String pubDate) {
         this.pubDate = pubDate;
-    }
-
-    public void setArtType(String artType) {
-        this.artType = artType;
     }
 
     public void setArtCategory(String artCategory) {
@@ -61,20 +51,12 @@ public class GovDocument {
         return numberPage;
     }
 
-    public String getPubName() {
-        return pubName;
-    }
-
     public String getName() {
         return name;
     }
 
     public String getPubDate() {
         return pubDate;
-    }
-
-    public String getArtType() {
-        return artType;
     }
 
     public String getArtCategory() {
