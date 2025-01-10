@@ -25,8 +25,20 @@ public class AnalysisResult {
         files.add(document);
     }
 
-    public void toXlsx() {
+    public String getFolderName() {
+        return this.folderName;
+    }
 
+    public List<GovDocument> getFiles() {
+        return this.files;
+    }
+
+    public int getTotalFiles() {
+        return this.totalFiles;
+    }
+
+    public int getFilesContainingKeywords() {
+        return this.filesContainingKeywords;
     }
 
 }

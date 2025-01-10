@@ -26,7 +26,7 @@ public class AnalysisHelper {
                         try {
                             documento = reader.readXmlFile(file);
                         } catch (Exception e) {
-                            System.out.println("Não foi possível processar o arquivo " + file.getFileName());
+                            System.out.println("NÃ£o foi possÃ­vel processar o arquivo " + file.getFileName());
                         }
 
                         if(documento != null) {

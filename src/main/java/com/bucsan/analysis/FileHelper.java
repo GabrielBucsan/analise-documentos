@@ -1,5 +1,6 @@
 package com.bucsan.analysis;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -64,6 +65,20 @@ public class FileHelper {
         }
 
         return govDocument;
+    }
+
+    public void saveXlsxToFile(Workbook workbook) {
+        try (FileOutputStream fileOut = new FileOutputStream("./src/out/resultado.xlsx")) {
+            workbook.write(fileOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

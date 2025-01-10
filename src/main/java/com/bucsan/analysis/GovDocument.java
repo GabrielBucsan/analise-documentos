@@ -56,4 +56,40 @@ public class GovDocument {
     public String getTexto() {
         return this.texto;
     }
+
+    public String getNumberPage() {
+        return numberPage;
+    }
+
+    public String getPubName() {
+        return pubName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPubDate() {
+        return pubDate;
+    }
+
+    public String getArtType() {
+        return artType;
+    }
+
+    public String getArtCategory() {
+        return artCategory;
+    }
+
+    public String getIdentifica() {
+        return identifica;
+    }
+
+    public String getEmenta() {
+        return ementa;
+    }
+
+    public String getArquivo() {
+        return arquivo;
+    }
 }
