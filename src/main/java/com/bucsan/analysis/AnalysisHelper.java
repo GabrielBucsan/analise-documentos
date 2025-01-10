@@ -75,7 +75,7 @@ public class AnalysisHelper {
     private boolean hasExpressionInText(String text, String[] expressoesChave) {
 
         for(String expressao : expressoesChave) {
-            Pattern pattern = Pattern.compile(expressao);
+            Pattern pattern = Pattern.compile(expressao.trim());
             Matcher matcher = pattern.matcher(text);
             if(matcher.find()) {
                 return true;

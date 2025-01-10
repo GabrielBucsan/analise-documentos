@@ -81,4 +81,37 @@ public class FileHelper {
         }
     }
 
+    public void saveExpressions(String expressions, String directoryPath) {
+        try (FileWriter writer = new FileWriter("searchData.sav")) {
+            writer.write(expressions + System.lineSeparator());
+            writer.write(directoryPath + System.lineSeparator());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String loadDirectoryPath() {
+        return loadSavedConfig(2);
+    }
+
+    public String loadExpressions() {
+        return loadSavedConfig(1);
+    }
+
+    private String loadSavedConfig(int line) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("searchData.sav"))) {
+            String linha;
+            int linhaAtual = 1;
+            while ((linha = reader.readLine()) != null) {
+                if(linhaAtual == line) {
+                    return linha;
+                }
+                linhaAtual++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }
