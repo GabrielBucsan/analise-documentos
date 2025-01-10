@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ExcelHelper {
 
-    public void exportResultsAsXlsx(List<AnalysisResult> results) {
+    public void exportResultsAsXlsx(List<AnalysisResult> results, String directoryPath) {
         Workbook workbook = new XSSFWorkbook();
 
         for (AnalysisResult result : results) {
@@ -29,7 +29,7 @@ public class ExcelHelper {
         }
 
         FileHelper fileHelper = new FileHelper();
-        fileHelper.saveXlsxToFile(workbook);
+        fileHelper.saveXlsxToFile(workbook, directoryPath);
     }
 
     private void createTotalRows(AnalysisResult result, Sheet sheet) {

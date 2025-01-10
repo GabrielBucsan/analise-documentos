@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 
 public class FileHelper {
 
@@ -69,14 +70,26 @@ public class FileHelper {
         return govDocument;
     }
 
-    public void saveXlsxToFile(Workbook workbook) {
-        try (FileOutputStream fileOut = new FileOutputStream("./src/out/resultado.xlsx")) {
+    public void saveXlsxToFile(Workbook workbook, String directoryPath) {
+        try (FileOutputStream fileOut = new FileOutputStream(directoryPath + "resultado.xlsx")) {
             workbook.write(fileOut);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
                 workbook.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void saveErrorsToFile(List<AnalysisResult> results) {
+        for(AnalysisResult result : results) {
+            try (FileWriter writer = new FileWriter("error-" + result.folderName + ".err")) {
+                for(String error : result.getErrors()) {
+                    writer.write(error + System.lineSeparator());
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

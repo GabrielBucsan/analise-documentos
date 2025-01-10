@@ -10,6 +10,7 @@ public class AnalysisResult {
     int filesContainingKeywords = 0;
     List<GovDocument> files = new ArrayList<>();
     String[] expressoesChave;
+    List<String> errors = new ArrayList<>();
 
     public AnalysisResult(String folderName, String[] expressoesChave) {
         this.folderName = folderName;
@@ -23,6 +24,10 @@ public class AnalysisResult {
     public void countFileContainingKeyword(GovDocument document) {
         filesContainingKeywords++;
         files.add(document);
+    }
+
+    public void addError(String error) {
+        this.errors.add(error);
     }
 
     public String getFolderName() {
@@ -39,6 +44,10 @@ public class AnalysisResult {
 
     public int getFilesContainingKeywords() {
         return this.filesContainingKeywords;
+    }
+
+    public List<String> getErrors() {
+        return errors;
     }
 
 }

@@ -17,7 +17,7 @@ public class ApplicationGUI {
     public void startGui() {
         JFrame frame = createMainFrame();
         GridBagConstraints gbc = createLayout();
-        JTextField searchField = createSearchField(frame, gbc);
+        JTextArea searchField = createSearchField(frame, gbc);
         JTextField directoryField = createDirectoryField(frame, gbc);
         createDirectoryButton(gbc, frame, directoryField);
         createExecutionButton(gbc, frame, searchField, directoryField);
@@ -26,10 +26,10 @@ public class ApplicationGUI {
         frame.setVisible(true);
     }
 
-    private void createExecutionButton(GridBagConstraints gbc, JFrame frame, JTextField searchField, JTextField directoryField) {
+    private void createExecutionButton(GridBagConstraints gbc, JFrame frame, JTextArea searchField, JTextField directoryField) {
         JButton executeButton = new JButton("Executar");
-        gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         frame.add(executeButton, gbc);
 
         executeButton.addActionListener(e -> {
@@ -42,16 +42,17 @@ public class ApplicationGUI {
                 String[] expressoesChave = searchExpression.split(",");
                 List<AnalysisResult> results = analysisHelper.runAnalysis(directoryPath, expressoesChave);
                 ExcelHelper excelHelper = new ExcelHelper();
-                excelHelper.exportResultsAsXlsx(results);
+                excelHelper.exportResultsAsXlsx(results, "./");
                 fileHelper.saveExpressions(searchExpression, directoryPath);
+                fileHelper.saveErrorsToFile(results);
             }
         });
     }
 
     private void createDirectoryButton(GridBagConstraints gbc, JFrame frame, JTextField directoryField) {
         JButton browseButton = new JButton("Procurar");
-        gbc.gridx = 2;
-        gbc.gridy = 1;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         frame.add(browseButton, gbc);
 
         browseButton.addActionListener(e -> {
@@ -79,15 +80,17 @@ public class ApplicationGUI {
         return frame;
     }
 
-    private JTextField createSearchField(JFrame frame, GridBagConstraints gbc) {
+    private JTextArea createSearchField(JFrame frame, GridBagConstraints gbc) {
         JLabel searchLabel = new JLabel("Expressões para pesquisa (separados por vírgula):");
         gbc.gridx = 0;
         gbc.gridy = 0;
         frame.add(searchLabel, gbc);
 
-        JTextField searchField = new JTextField(20);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
+        JTextArea searchField = new JTextArea(5, 30);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        searchField.setLineWrap(true);
+        searchField.setWrapStyleWord(true);
         frame.add(searchField, gbc);
 
         String loadedExpressions = fileHelper.loadExpressions();
@@ -101,13 +104,13 @@ public class ApplicationGUI {
     private JTextField createDirectoryField(JFrame frame, GridBagConstraints gbc) {
         JLabel directoryLabel = new JLabel("Selecionar diretório:");
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         frame.add(directoryLabel, gbc);
 
         JTextField directoryField = new JTextField(20);
         directoryField.setEditable(false);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
         frame.add(directoryField, gbc);
 
         String loadedDirectoryPath = fileHelper.loadDirectoryPath();
