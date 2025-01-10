@@ -18,5 +18,6 @@ public class Main {
         ExcelHelper excelHelper = new ExcelHelper();
         excelHelper.exportResultsAsXlsx(results);
 
+        System.out.println("");
     }
 }
