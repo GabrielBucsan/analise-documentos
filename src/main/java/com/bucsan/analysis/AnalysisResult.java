@@ -1,6 +1,7 @@
 package com.bucsan.analysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AnalysisResult {
@@ -48,6 +49,10 @@ public class AnalysisResult {
 
     public List<String> getErrors() {
         return errors;
+    }
+
+    public List<String> getExpressions() {
+        return Arrays.asList(expressoesChave);
     }
 
 }

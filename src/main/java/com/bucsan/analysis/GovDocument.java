@@ -1,5 +1,8 @@
 package com.bucsan.analysis;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class GovDocument {
 
     String numberPage;
@@ -10,6 +13,7 @@ public class GovDocument {
     String ementa;
     String texto;
     String arquivo;
+    Map<String, Integer> ocorrenciasExpressoes = new HashMap<>();
 
     public void setNumberPage(String numberPage) {
         this.numberPage = numberPage;
@@ -41,6 +45,14 @@ public class GovDocument {
 
     public void setArquivo(String arquivo) {
         this.arquivo = arquivo;
+    }
+
+    public void setExpressionCount(String expression, Integer expressionCount) {
+        this.ocorrenciasExpressoes.put(expression, expressionCount);
+    }
+
+    public int getExpressionCount(String expression) {
+        return this.ocorrenciasExpressoes.get(expression);
     }
 
     public String getTexto() {

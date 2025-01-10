@@ -48,7 +48,7 @@ public class AnalysisHelper {
                         }
 
                         if(documento != null) {
-                            if(analyseFile(documento, expressoesChave)) {
+                            if(hasExpressionInText(documento, expressoesChave)) {
                                 result.countFileContainingKeyword(documento);
                             }
                         }
@@ -64,22 +64,22 @@ public class AnalysisHelper {
         return result;
     }
 
-    private boolean analyseFile(GovDocument documento, String[] expressoesChave) {
-        AnalysisHelper analysisHelper = new AnalysisHelper();
-        return analysisHelper.hasExpressionInText(documento.getTexto(), expressoesChave);
-    }
-
-    private boolean hasExpressionInText(String text, String[] expressoesChave) {
-
+    private boolean hasExpressionInText(GovDocument documento, String[] expressoesChave) {
+        boolean hasAnyExpression = false;
         for(String expressao : expressoesChave) {
             Pattern pattern = Pattern.compile(expressao.trim());
-            Matcher matcher = pattern.matcher(text);
-            if(matcher.find()) {
-                return true;
+            Matcher matcher = pattern.matcher(documento.getTexto());
+            int expressionCount = 0;
+            while(matcher.find()) {
+                expressionCount++;
+            }
+            documento.setExpressionCount(expressao, expressionCount);
+            if(expressionCount > 0) {
+                hasAnyExpression = true;
             }
         }
 
-        return false;
+        return hasAnyExpression;
     }
 
 }

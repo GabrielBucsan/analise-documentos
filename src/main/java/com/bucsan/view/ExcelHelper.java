@@ -21,10 +21,13 @@ public class ExcelHelper {
             Sheet sheet = workbook.createSheet(result.getFolderName());
             createTotalRows(result, sheet);
             createBlankRow(sheet);
-            createDocumentHeader(sheet);
+            int totalColumns = createDocumentHeader(sheet, result.getExpressions());
             for(int i = 3; i < result.getFiles().size() + 3; i++) {
                 GovDocument document = result.getFiles().get(i - 3);
-                createDocumentResultRow(document, sheet, i);
+                createDocumentResultRow(document, result.getExpressions(), sheet, i);
+            }
+            for (int i = 0; i < totalColumns; i++) {
+                sheet.autoSizeColumn(i);
             }
         }
 
@@ -48,7 +51,7 @@ public class ExcelHelper {
         sheet.createRow(1);
     }
 
-    private void createDocumentHeader(Sheet sheet) {
+    private int createDocumentHeader(Sheet sheet, List<String> expressions) {
         Row row = sheet.createRow(2);
 
         List<Object> objects = new ArrayList<>();
@@ -59,14 +62,17 @@ public class ExcelHelper {
         objects.add("Órgão responsável pela publicação");
         objects.add("Ementa");
         objects.add("Arquivo");
+        objects.addAll(expressions);
 
         for(int i = 0; i < objects.size(); i++) {
             Cell cell = row.createCell(i);
             cell.setCellValue(objects.get(i).toString());
         }
+
+        return objects.size();
     }
 
-    private void createDocumentResultRow(GovDocument document, Sheet sheet, int rowNumber) {
+    private void createDocumentResultRow(GovDocument document, List<String> expressions, Sheet sheet, int rowNumber) {
         Row row = sheet.createRow(rowNumber);
 
         List<Object> objects = new ArrayList<>();
@@ -77,6 +83,10 @@ public class ExcelHelper {
         objects.add(document.getArtCategory());
         objects.add(document.getEmenta());
         objects.add(document.getArquivo());
+
+        for(String expression : expressions) {
+            objects.add(document.getExpressionCount(expression));
+        }
 
         for(int i = 0; i < objects.size(); i++) {
             Cell cell = row.createCell(i);
