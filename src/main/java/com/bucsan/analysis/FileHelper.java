@@ -15,12 +15,16 @@ import java.util.List;
 
 public class FileHelper {
 
+    String errorExtension = ".err";
+    String resultFileName = "resultado.xlsx";
+    String saveFileName = "searchData.sav";
+
     public GovDocument readXmlFile(Path file) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         StringBuilder fileContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile(), StandardCharsets.ISO_8859_1))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fileContent.append(line).append("\n");
@@ -69,7 +73,7 @@ public class FileHelper {
     }
 
     public void saveXlsxToFile(Workbook workbook, String directoryPath) {
-        try (FileOutputStream fileOut = new FileOutputStream(directoryPath + "resultado.xlsx")) {
+        try (FileOutputStream fileOut = new FileOutputStream(directoryPath + resultFileName)) {
             workbook.write(fileOut);
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,7 +91,7 @@ public class FileHelper {
             if(result.getErrors().isEmpty()) {
                 continue;
             }
-            try (FileWriter writer = new FileWriter("error-" + result.folderName + ".err")) {
+            try (FileWriter writer = new FileWriter("error-" + result.folderName + errorExtension)) {
                 for(String error : result.getErrors()) {
                     writer.write(error + System.lineSeparator());
                 }
@@ -105,10 +109,10 @@ public class FileHelper {
             return;
         }
 
-        File[] arquivos = diretorio.listFiles((dir, nome) -> nome.endsWith("err"));
+        File[] arquivos = diretorio.listFiles((dir, nome) -> nome.endsWith(errorExtension));
 
         if (arquivos == null || arquivos.length == 0) {
-            System.out.println("Nenhum arquivo com a extensão .err foi encontrado.");
+            System.out.println("Nenhum arquivo com a extensão " + errorExtension + " foi encontrado.");
             return;
         }
 
@@ -122,7 +126,7 @@ public class FileHelper {
     }
 
     public void saveExpressions(String expressions, String directoryPath) {
-        try (FileWriter writer = new FileWriter("searchData.sav")) {
+        try (FileWriter writer = new FileWriter(saveFileName)) {
             writer.write(expressions + System.lineSeparator());
             writer.write(directoryPath + System.lineSeparator());
         } catch (IOException e) {
@@ -139,7 +143,7 @@ public class FileHelper {
     }
 
     private String loadSavedConfig(int line) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("searchData.sav"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(saveFileName))) {
             String linha;
             int linhaAtual = 1;
             while ((linha = reader.readLine()) != null) {
