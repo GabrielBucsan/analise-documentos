@@ -74,7 +74,6 @@ public class ApplicationGUI {
         List<AnalysisResult> results = analysisHelper.runAnalysis(directory.toAbsolutePath().toString(), expressoesChave);
         ExcelHelper excelHelper = new ExcelHelper();
         excelHelper.exportResultsAsXlsx(results, "./", "resultado-" + directory.getFileName().toString());
-        fileHelper.saveErrorsToFile(results, "erro-" + directory.getFileName().toString());
     }
 
     private void createDirectoryButton(GridBagConstraints gbc, JFrame frame, JTextField directoryField) {
@@ -130,7 +129,7 @@ public class ApplicationGUI {
     }
 
     private JTextField createDirectoryField(JFrame frame, GridBagConstraints gbc) {
-        JLabel directoryLabel = new JLabel("Selecionar diretório:");
+        JLabel directoryLabel = new JLabel("Diretório contendo arquivos para pesquisa:");
         gbc.gridx = 0;
         gbc.gridy = 2;
         frame.add(directoryLabel, gbc);

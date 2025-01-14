@@ -86,21 +86,6 @@ public class FileHelper {
         }
     }
 
-    public void saveErrorsToFile(List<AnalysisResult> results, String fileName) {
-        for(AnalysisResult result : results) {
-            if(result.getErrors().isEmpty()) {
-                continue;
-            }
-            try (FileWriter writer = new FileWriter(fileName + errorExtension)) {
-                for(String error : result.getErrors()) {
-                    writer.write(error + System.lineSeparator());
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public void clearErros(String directoryPath) {
         File diretorio = new File(directoryPath);
 

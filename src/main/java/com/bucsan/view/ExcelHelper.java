@@ -22,6 +22,7 @@ public class ExcelHelper {
 
     private Workbook generateXlsx(List<AnalysisResult> results) {
         Workbook workbook = new XSSFWorkbook();
+        List<String> errors = new ArrayList<>();
 
         for (AnalysisResult result : results) {
             Sheet sheet = workbook.createSheet(result.getFolderName());
@@ -35,9 +36,22 @@ public class ExcelHelper {
             for (int i = 0; i < totalColumns; i++) {
                 sheet.autoSizeColumn(i);
             }
+            errors.addAll(result.getErrors());
         }
 
+        generateErrorSheet(workbook, errors);
+
         return workbook;
+    }
+
+    private void generateErrorSheet(Workbook workbook, List<String> errors) {
+        Sheet sheet = workbook.createSheet("Erros");
+
+        for(int i = 0; i < errors.size(); i++) {
+            Row row = sheet.createRow(i);
+            Cell cell1 = row.createCell(0);
+            cell1.setCellValue(errors.get(i));
+        }
     }
 
     private void createTotalRows(AnalysisResult result, Sheet sheet) {
