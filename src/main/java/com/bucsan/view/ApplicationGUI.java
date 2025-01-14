@@ -7,7 +7,12 @@ import com.bucsan.analysis.FileHelper;
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ApplicationGUI {
 
@@ -36,18 +41,40 @@ public class ApplicationGUI {
             String searchExpression = searchField.getText();
             String directoryPath = directoryField.getText();
 
+            fileHelper.clearErros(directoryPath);
+
             if (searchExpression.isEmpty() || directoryPath.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-                String[] expressoesChave = searchExpression.split(",");
-                List<AnalysisResult> results = analysisHelper.runAnalysis(directoryPath, expressoesChave);
-                ExcelHelper excelHelper = new ExcelHelper();
-                excelHelper.exportResultsAsXlsx(results, "./");
-                fileHelper.clearErros(directoryPath);
                 fileHelper.saveExpressions(searchExpression, directoryPath);
-                fileHelper.saveErrorsToFile(results);
+
+                executeButton.setEnabled(false);
+                executeButton.setText("Análise em andamento");
+
+                new Thread(() -> {
+                    try (Stream<Path> paths = Files.list(new File(directoryPath).toPath())) {
+                        paths.filter(Files::isDirectory)
+                                .forEach(directory -> doAnalysis(searchExpression, directory));
+                    } catch (IOException err) {
+                        err.printStackTrace();
+                    } finally {
+                        SwingUtilities.invokeLater(() -> {
+                            executeButton.setEnabled(true);
+                            executeButton.setText("Executar");
+                            JOptionPane.showMessageDialog(frame, "Análise concluída!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                        });
+                    }
+                }).start();
             }
         });
+    }
+
+    private void doAnalysis(String searchExpression, Path directory) {
+        String[] expressoesChave = searchExpression.split(",");
+        List<AnalysisResult> results = analysisHelper.runAnalysis(directory.toAbsolutePath().toString(), expressoesChave);
+        ExcelHelper excelHelper = new ExcelHelper();
+        excelHelper.exportResultsAsXlsx(results, "./", "resultado-" + directory.getFileName().toString());
+        fileHelper.saveErrorsToFile(results, "erro-" + directory.getFileName().toString());
     }
 
     private void createDirectoryButton(GridBagConstraints gbc, JFrame frame, JTextField directoryField) {

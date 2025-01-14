@@ -16,15 +16,15 @@ import java.util.List;
 public class FileHelper {
 
     String errorExtension = ".err";
-    String resultFileName = "resultado.xlsx";
     String saveFileName = "searchData.sav";
+    String xlsxExtension = ".xlsx";
 
     public GovDocument readXmlFile(Path file) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         StringBuilder fileContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile(), StandardCharsets.ISO_8859_1))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fileContent.append(line).append("\n");
@@ -72,8 +72,8 @@ public class FileHelper {
         return govDocument;
     }
 
-    public void saveXlsxToFile(Workbook workbook, String directoryPath) {
-        try (FileOutputStream fileOut = new FileOutputStream(directoryPath + resultFileName)) {
+    public void saveXlsxToFile(Workbook workbook, String directoryPath, String resultFileName) {
+        try (FileOutputStream fileOut = new FileOutputStream(directoryPath + resultFileName + xlsxExtension)) {
             workbook.write(fileOut);
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,12 +86,12 @@ public class FileHelper {
         }
     }
 
-    public void saveErrorsToFile(List<AnalysisResult> results) {
+    public void saveErrorsToFile(List<AnalysisResult> results, String fileName) {
         for(AnalysisResult result : results) {
             if(result.getErrors().isEmpty()) {
                 continue;
             }
-            try (FileWriter writer = new FileWriter("error-" + result.folderName + errorExtension)) {
+            try (FileWriter writer = new FileWriter(fileName + errorExtension)) {
                 for(String error : result.getErrors()) {
                     writer.write(error + System.lineSeparator());
                 }

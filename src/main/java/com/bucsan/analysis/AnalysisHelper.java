@@ -33,31 +33,29 @@ public class AnalysisHelper {
         FileHelper reader = new FileHelper();
         AnalysisResult result = new AnalysisResult(folderPath.getFileName().toString(), expressoesChave);
 
-        Path dir = Paths.get(folderPath.toUri());
+        Path mainDirectory = Paths.get(folderPath.toUri());
 
         try {
-            try (Stream<Path> paths = Files.list(dir)) {
-                paths.filter(Files::isRegularFile)
-                    .forEach(file -> {
-
-                        GovDocument documento = null;
-                        try {
-                            documento = reader.readXmlFile(file);
-                        } catch (Exception e) {
-                            result.addError(file.getFileName() + " - " + e.getMessage());
-                        }
-
-                        if(documento != null) {
-                            if(hasExpressionInText(documento, expressoesChave)) {
-                                result.countFileContainingKeyword(documento);
+            try (Stream<Path> subFolders = Files.list(mainDirectory)) {
+                subFolders.filter(Files::isRegularFile)
+                        .forEach(file -> {
+                            GovDocument documento = null;
+                            try {
+                                documento = reader.readXmlFile(file);
+                            } catch (Exception e) {
+                                result.addError(file.getFileName() + " - " + e.getMessage());
                             }
-                        }
 
-                        result.countFile();
-                    });
+                            if(documento != null) {
+                                if(hasExpressionInText(documento, expressoesChave)) {
+                                    result.countFileContainingKeyword(documento);
+                                }
+                            }
+                        });
             }
-        } catch (
-                IOException e) {
+
+            result.countFile();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
