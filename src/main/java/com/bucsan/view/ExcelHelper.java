@@ -15,6 +15,12 @@ import java.util.List;
 public class ExcelHelper {
 
     public void exportResultsAsXlsx(List<AnalysisResult> results, String directoryPath, String resultFileName) {
+        Workbook workbook = generateXlsx(results);
+        FileHelper fileHelper = new FileHelper();
+        fileHelper.saveXlsxToFile(workbook, directoryPath, resultFileName);
+    }
+
+    private Workbook generateXlsx(List<AnalysisResult> results) {
         Workbook workbook = new XSSFWorkbook();
 
         for (AnalysisResult result : results) {
@@ -31,8 +37,7 @@ public class ExcelHelper {
             }
         }
 
-        FileHelper fileHelper = new FileHelper();
-        fileHelper.saveXlsxToFile(workbook, directoryPath, resultFileName);
+        return workbook;
     }
 
     private void createTotalRows(AnalysisResult result, Sheet sheet) {
