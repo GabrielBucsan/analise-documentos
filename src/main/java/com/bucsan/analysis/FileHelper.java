@@ -10,8 +10,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public class FileHelper {
 
@@ -24,14 +24,15 @@ public class FileHelper {
         DocumentBuilder builder = factory.newDocumentBuilder();
 
         StringBuilder fileContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file.toFile()))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(file.toFile().toPath()), StandardCharsets.ISO_8859_1))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fileContent.append(line).append("\n");
             }
         }
 
-        String xmlContent = fileContent.toString().replace("</Identifica>\"","\"");
+        String xmlContent = fileContent.toString().replace("</Identifica>\"", "\"");
 
         InputStream inputStream = new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.ISO_8859_1));
 
@@ -40,6 +41,7 @@ public class FileHelper {
 
         GovDocument govDocument = new GovDocument();
 
+        // Lê os elementos <article>
         NodeList articles = document.getElementsByTagName("article");
 
         for (int i = 0; i < articles.getLength(); i++) {
