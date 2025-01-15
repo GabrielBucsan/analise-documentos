@@ -38,23 +38,22 @@ public class AnalysisHelper {
         try {
             try (Stream<Path> subFolders = Files.list(mainDirectory)) {
                 subFolders.filter(Files::isRegularFile)
-                        .forEach(file -> {
-                            GovDocument documento = null;
-                            try {
-                                documento = reader.readXmlFile(file);
-                            } catch (Exception e) {
-                                result.addError(file.getFileName() + " - " + e.getMessage());
-                            }
+                .forEach(file -> {
+                    GovDocument documento = null;
+                    try {
+                        documento = reader.readXmlFile(file);
+                    } catch (Exception e) {
+                        result.addError(file.getFileName() + " - " + e.getMessage());
+                    }
 
-                            if(documento != null) {
-                                if(hasExpressionInText(documento, expressoesChave)) {
-                                    result.countFileContainingKeyword(documento);
-                                }
-                            }
-                        });
+                    if(documento != null) {
+                        if(hasExpressionInText(documento, expressoesChave)) {
+                            result.countFileContainingKeyword(documento);
+                        }
+                    }
+                    result.countFile();
+                });
             }
-
-            result.countFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
