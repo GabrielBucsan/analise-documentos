@@ -9,8 +9,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ExcelHelper {
 
@@ -39,9 +38,56 @@ public class ExcelHelper {
             errors.addAll(result.getErrors());
         }
 
+        generateTotalSheet(workbook, results);
         generateErrorSheet(workbook, errors);
 
         return workbook;
+    }
+
+    private void generateTotalSheet(Workbook workbook, List<AnalysisResult> results) {
+        Sheet sheet = workbook.createSheet("Totais");
+        int totalSearchedFiles = 0;
+        int totalMatchedFiles = 0;
+        Map<String, Integer> totalMatchesByExpression = new HashMap<>();
+
+        for(AnalysisResult result : results) {
+            totalSearchedFiles += result.getTotalFiles();
+            totalMatchedFiles += result.getFilesContainingKeywords();
+            List<String> expressions = result.getExpressions();
+            for(String expression : expressions) {
+                Integer expressionCount = totalMatchesByExpression.get(expression);
+                if(expressionCount == null) {
+                    expressionCount = 0;
+                }
+                for (GovDocument document : result.getFiles()) {
+                    expressionCount += document.getExpressionCount(expression);
+                }
+                totalMatchesByExpression.put(expression, expressionCount);
+            }
+        }
+
+        Row row = sheet.createRow(0);
+        Cell cell1 = row.createCell(0);
+        cell1.setCellValue("Arquivos analisados: ");
+        Cell cell2 = row.createCell(1);
+        cell2.setCellValue(totalSearchedFiles);
+        Row row2 = sheet.createRow(1);
+        Cell cell3 = row2.createCell(0);
+        cell3.setCellValue("Arquivos contendo pelo menos uma das expressões: ");
+        Cell cell4 = row2.createCell(1);
+        cell4.setCellValue(totalMatchedFiles);
+        for (int i = 0; i < 4; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        int i = 2;
+        for (Map.Entry<String, Integer> entry : totalMatchesByExpression.entrySet()) {
+            Row expressionRow = sheet.createRow(i);
+            Cell expressionCell = expressionRow.createCell(0);
+            expressionCell.setCellValue(entry.getKey());
+            Cell countCell = expressionRow.createCell(1);
+            countCell.setCellValue(entry.getValue());
+            i += 1;
+        }
     }
 
     private void generateErrorSheet(Workbook workbook, List<String> errors) {
@@ -61,7 +107,7 @@ public class ExcelHelper {
         Cell cell2 = row.createCell(1);
         cell2.setCellValue(result.getTotalFiles());
         Cell cell3 = row.createCell(2);
-        cell3.setCellValue("Arquivos contendo as expressões:");
+        cell3.setCellValue("Arquivos contendo pelo menos uma das expressões:");
         Cell cell4 = row.createCell(3);
         cell4.setCellValue(result.getFilesContainingKeywords());
     }
