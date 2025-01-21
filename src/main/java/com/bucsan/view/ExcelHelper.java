@@ -23,13 +23,21 @@ public class ExcelHelper {
         Workbook workbook = new XSSFWorkbook();
         List<String> errors = new ArrayList<>();
 
+        generateMonthSheets(results, workbook, errors);
+        generateTotalSheet(workbook, results);
+        generateErrorSheet(workbook, errors);
+
+        return workbook;
+    }
+
+    private void generateMonthSheets(List<AnalysisResult> results, Workbook workbook, List<String> errors) {
         for (AnalysisResult result : results) {
             Sheet sheet = workbook.createSheet(result.getFolderName());
-            createTotalRows(result, sheet);
+            createTotalColumns(result, sheet);
             createBlankRow(sheet);
             int totalColumns = createDocumentHeader(sheet, result.getSearchExpressions());
-            for(int i = 3; i < result.getFiles().size() + 3; i++) {
-                GovDocument document = result.getFiles().get(i - 3);
+            for(int i = 4; i < result.getFiles().size() + 4; i++) {
+                GovDocument document = result.getFiles().get(i - 4);
                 createDocumentResultRow(document, result.getSearchExpressions(), sheet, i);
             }
             for (int i = 0; i < totalColumns; i++) {
@@ -37,11 +45,6 @@ public class ExcelHelper {
             }
             errors.addAll(result.getErrors());
         }
-
-        generateTotalSheet(workbook, results);
-        generateErrorSheet(workbook, errors);
-
-        return workbook;
     }
 
     private void generateTotalSheet(Workbook workbook, List<AnalysisResult> results) {
@@ -100,24 +103,25 @@ public class ExcelHelper {
         }
     }
 
-    private void createTotalRows(AnalysisResult result, Sheet sheet) {
+    private void createTotalColumns(AnalysisResult result, Sheet sheet) {
         Row row = sheet.createRow(0);
         Cell cell1 = row.createCell(0);
         cell1.setCellValue("Arquivos analisados:");
         Cell cell2 = row.createCell(1);
         cell2.setCellValue(result.getTotalFiles());
-        Cell cell3 = row.createCell(2);
+        Row row2 = sheet.createRow(1);
+        Cell cell3 = row2.createCell(0);
         cell3.setCellValue("Arquivos contendo pelo menos uma das expressões:");
-        Cell cell4 = row.createCell(3);
+        Cell cell4 = row2.createCell(1);
         cell4.setCellValue(result.getFilesContainingKeywords());
     }
 
     private void createBlankRow(Sheet sheet) {
-        sheet.createRow(1);
+        sheet.createRow(2);
     }
 
     private int createDocumentHeader(Sheet sheet, List<String> expressions) {
-        Row row = sheet.createRow(2);
+        Row row = sheet.createRow(3);
 
         List<Object> objects = new ArrayList<>();
         objects.add("Tipo de norma");
