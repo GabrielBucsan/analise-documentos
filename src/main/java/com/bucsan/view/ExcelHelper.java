@@ -27,10 +27,10 @@ public class ExcelHelper {
             Sheet sheet = workbook.createSheet(result.getFolderName());
             createTotalRows(result, sheet);
             createBlankRow(sheet);
-            int totalColumns = createDocumentHeader(sheet, result.getExpressions());
+            int totalColumns = createDocumentHeader(sheet, result.getSearchExpressions());
             for(int i = 3; i < result.getFiles().size() + 3; i++) {
                 GovDocument document = result.getFiles().get(i - 3);
-                createDocumentResultRow(document, result.getExpressions(), sheet, i);
+                createDocumentResultRow(document, result.getSearchExpressions(), sheet, i);
             }
             for (int i = 0; i < totalColumns; i++) {
                 sheet.autoSizeColumn(i);
@@ -53,7 +53,7 @@ public class ExcelHelper {
         for(AnalysisResult result : results) {
             totalSearchedFiles += result.getTotalFiles();
             totalMatchedFiles += result.getFilesContainingKeywords();
-            List<String> expressions = result.getExpressions();
+            List<String> expressions = result.getSearchExpressions();
             for(String expression : expressions) {
                 Integer expressionCount = totalMatchesByExpression.get(expression);
                 if(expressionCount == null) {

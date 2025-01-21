@@ -3,6 +3,7 @@ package com.bucsan.view;
 import com.bucsan.analysis.AnalysisHelper;
 import com.bucsan.analysis.AnalysisResult;
 import com.bucsan.analysis.FileHelper;
+import com.bucsan.analysis.SearchExpressions;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
@@ -23,22 +24,24 @@ public class ApplicationGUI {
         JFrame frame = createMainFrame();
         GridBagConstraints gbc = createLayout();
         JTextArea searchField = createSearchField(frame, gbc);
+        JTextArea responsibleSearchField = createResponsibleSearchField(frame, gbc);
         JTextField directoryField = createDirectoryField(frame, gbc);
         createDirectoryButton(gbc, frame, directoryField);
-        createExecutionButton(gbc, frame, searchField, directoryField);
+        createExecutionButton(gbc, frame, searchField, responsibleSearchField, directoryField);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
-    private void createExecutionButton(GridBagConstraints gbc, JFrame frame, JTextArea searchField, JTextField directoryField) {
+    private void createExecutionButton(GridBagConstraints gbc, JFrame frame, JTextArea searchField, JTextArea responsibleSearchField, JTextField directoryField) {
         JButton executeButton = new JButton("Executar");
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         frame.add(executeButton, gbc);
 
         executeButton.addActionListener(e -> {
             String searchExpression = searchField.getText();
+            String responsibleSearchExpression = responsibleSearchField.getText();
             String directoryPath = directoryField.getText();
 
             fileHelper.clearErros(directoryPath);
@@ -46,7 +49,8 @@ public class ApplicationGUI {
             if (searchExpression.isEmpty() || directoryPath.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
             } else {
-                fileHelper.saveExpressions(searchExpression, directoryPath);
+                SearchExpressions expressions = new SearchExpressions(searchExpression, responsibleSearchExpression);
+                fileHelper.saveExpressions(expressions, directoryPath);
 
                 executeButton.setEnabled(false);
                 executeButton.setText("Análise em andamento");
@@ -54,7 +58,7 @@ public class ApplicationGUI {
                 new Thread(() -> {
                     try (Stream<Path> paths = Files.list(new File(directoryPath).toPath())) {
                         paths.filter(Files::isDirectory)
-                                .forEach(directory -> doAnalysis(searchExpression, directory));
+                                .forEach(directory -> doAnalysis(expressions, directory));
                     } catch (IOException err) {
                         err.printStackTrace();
                     } finally {
@@ -69,9 +73,8 @@ public class ApplicationGUI {
         });
     }
 
-    private void doAnalysis(String searchExpression, Path directory) {
-        String[] expressoesChave = searchExpression.split(",");
-        List<AnalysisResult> results = analysisHelper.runAnalysis(directory.toAbsolutePath().toString(), expressoesChave);
+    private void doAnalysis(SearchExpressions expressions, Path directory) {
+        List<AnalysisResult> results = analysisHelper.runAnalysis(directory.toAbsolutePath().toString(), expressions);
         ExcelHelper excelHelper = new ExcelHelper();
         excelHelper.exportResultsAsXlsx(results, "./", "resultado-" + directory.getFileName().toString());
     }
@@ -79,7 +82,7 @@ public class ApplicationGUI {
     private void createDirectoryButton(GridBagConstraints gbc, JFrame frame, JTextField directoryField) {
         JButton browseButton = new JButton("Procurar");
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         frame.add(browseButton, gbc);
 
         browseButton.addActionListener(e -> {
@@ -100,7 +103,7 @@ public class ApplicationGUI {
     }
 
     private JFrame createMainFrame() {
-        JFrame frame = new JFrame("Busca de expressões");
+        JFrame frame = new JFrame("Busca de expressões em arquivos do Diário Oficial da União");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 300);
         frame.setLayout(new GridBagLayout());
@@ -108,7 +111,7 @@ public class ApplicationGUI {
     }
 
     private JTextArea createSearchField(JFrame frame, GridBagConstraints gbc) {
-        JLabel searchLabel = new JLabel("Expressões para pesquisa (separados por vírgula):");
+        JLabel searchLabel = new JLabel("Expressões para pesquisa no corpo do documento (separados por vírgula):");
         gbc.gridx = 0;
         gbc.gridy = 0;
         frame.add(searchLabel, gbc);
@@ -131,13 +134,13 @@ public class ApplicationGUI {
     private JTextField createDirectoryField(JFrame frame, GridBagConstraints gbc) {
         JLabel directoryLabel = new JLabel("Diretório contendo arquivos para pesquisa:");
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         frame.add(directoryLabel, gbc);
 
         JTextField directoryField = new JTextField(20);
         directoryField.setEditable(false);
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 5;
         frame.add(directoryField, gbc);
 
         String loadedDirectoryPath = fileHelper.loadDirectoryPath();
@@ -146,6 +149,25 @@ public class ApplicationGUI {
         }
 
         return directoryField;
+    }
+
+    private JTextArea createResponsibleSearchField(JFrame frame,  GridBagConstraints gbc) {
+        JLabel searchLabel = new JLabel("Expressões para filtro em Órgão Responsável (separados por vírgula):");
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        frame.add(searchLabel, gbc);
+
+        JTextArea searchField = new JTextArea(5, 30);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        frame.add(searchField, gbc);
+
+        String loadedExpressions = fileHelper.loadResponsibleExpressions();
+        if(loadedExpressions != null) {
+            searchField.setText(loadedExpressions);
+        }
+
+        return searchField;
     }
 
 }

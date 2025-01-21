@@ -10,12 +10,12 @@ public class AnalysisResult {
     int totalFiles = 0;
     int filesContainingKeywords = 0;
     List<GovDocument> files = new ArrayList<>();
-    String[] expressoesChave;
+    SearchExpressions expressions;
     List<String> errors = new ArrayList<>();
 
-    public AnalysisResult(String folderName, String[] expressoesChave) {
+    public AnalysisResult(String folderName, SearchExpressions expressions) {
         this.folderName = folderName;
-        this.expressoesChave = expressoesChave;
+        this.expressions = expressions;
     }
 
     public void countFile() {
@@ -51,8 +51,8 @@ public class AnalysisResult {
         return errors;
     }
 
-    public List<String> getExpressions() {
-        return Arrays.asList(expressoesChave);
+    public List<String> getSearchExpressions() {
+        return Arrays.asList(expressions.getSearchExpressions());
     }
 
 }

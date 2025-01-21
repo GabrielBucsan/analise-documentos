@@ -112,10 +112,11 @@ public class FileHelper {
         }
     }
 
-    public void saveExpressions(String expressions, String directoryPath) {
+    public void saveExpressions(SearchExpressions expressions, String directoryPath) {
         try (FileWriter writer = new FileWriter(saveFileName)) {
-            writer.write(expressions + System.lineSeparator());
+            writer.write(expressions.getSearchExpressionRaw() + System.lineSeparator());
             writer.write(directoryPath + System.lineSeparator());
+            writer.write(expressions.getResponsibleExpressionRaw() + System.lineSeparator());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,6 +124,10 @@ public class FileHelper {
 
     public String loadDirectoryPath() {
         return loadSavedConfig(2);
+    }
+
+    public String loadResponsibleExpressions() {
+        return loadSavedConfig(3);
     }
 
     public String loadExpressions() {
