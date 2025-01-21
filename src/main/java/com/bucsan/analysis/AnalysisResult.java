@@ -2,6 +2,7 @@ package com.bucsan.analysis;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class AnalysisResult {
@@ -16,6 +17,9 @@ public class AnalysisResult {
     public AnalysisResult(String folderName, SearchExpressions expressions) {
         this.folderName = folderName;
         this.expressions = expressions;
+    }
+
+    protected AnalysisResult() {
     }
 
     public void countFile() {
@@ -53,6 +57,31 @@ public class AnalysisResult {
 
     public List<String> getSearchExpressions() {
         return Arrays.asList(expressions.getSearchExpressions());
+    }
+
+    public int getExpressionCount(String expression) {
+        int count = 0;
+        for(GovDocument document : files) {
+            count += document.getExpressionCount(expression);
+        }
+        return count;
+    }
+
+    public static AnalysisResult totalizeResults(Collection<AnalysisResult> results) {
+        AnalysisResult totalResult = new AnalysisResult();
+        boolean firstTime = true;
+
+        for(AnalysisResult result : results) {
+            totalResult.files.addAll(result.getFiles());
+            totalResult.totalFiles += result.getTotalFiles();
+            totalResult.filesContainingKeywords += result.filesContainingKeywords;
+            if(firstTime) {
+                firstTime = false;
+                totalResult.expressions = result.expressions;
+            }
+        }
+
+        return totalResult;
     }
 
 }

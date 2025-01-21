@@ -9,7 +9,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExcelHelper {
 
@@ -23,74 +24,41 @@ public class ExcelHelper {
         Workbook workbook = new XSSFWorkbook();
         List<String> errors = new ArrayList<>();
 
-        generateMonthSheets(results, workbook, errors);
         generateTotalSheet(workbook, results);
+        generateMonthSheets(results, workbook, errors);
         generateErrorSheet(workbook, errors);
 
         return workbook;
     }
 
+
+
     private void generateMonthSheets(List<AnalysisResult> results, Workbook workbook, List<String> errors) {
         for (AnalysisResult result : results) {
             Sheet sheet = workbook.createSheet(result.getFolderName());
-            createTotalColumns(result, sheet);
-            createBlankRow(sheet);
-            int totalColumns = createDocumentHeader(sheet, result.getSearchExpressions());
-            for(int i = 4; i < result.getFiles().size() + 4; i++) {
-                GovDocument document = result.getFiles().get(i - 4);
-                createDocumentResultRow(document, result.getSearchExpressions(), sheet, i);
-            }
-            for (int i = 0; i < totalColumns; i++) {
-                sheet.autoSizeColumn(i);
-            }
+            printResultOnSheet(result, sheet);
             errors.addAll(result.getErrors());
+        }
+    }
+
+    private void printResultOnSheet(AnalysisResult result, Sheet sheet) {
+        Integer row = 0;
+        row = createTotalColumns(result, sheet, row);
+        row = createBlankRow(sheet, row);
+        int totalColumns = createDocumentHeader(sheet, result.getSearchExpressions(), row++);
+        for(int i = 0; i < result.getFiles().size(); i++) {
+            GovDocument document = result.getFiles().get(i);
+            row = createDocumentResultRow(document, result.getSearchExpressions(), sheet, row);
+        }
+        for (int i = 0; i < totalColumns; i++) {
+            sheet.autoSizeColumn(i);
         }
     }
 
     private void generateTotalSheet(Workbook workbook, List<AnalysisResult> results) {
         Sheet sheet = workbook.createSheet("Totais");
-        int totalSearchedFiles = 0;
-        int totalMatchedFiles = 0;
-        Map<String, Integer> totalMatchesByExpression = new HashMap<>();
-
-        for(AnalysisResult result : results) {
-            totalSearchedFiles += result.getTotalFiles();
-            totalMatchedFiles += result.getFilesContainingKeywords();
-            List<String> expressions = result.getSearchExpressions();
-            for(String expression : expressions) {
-                Integer expressionCount = totalMatchesByExpression.get(expression);
-                if(expressionCount == null) {
-                    expressionCount = 0;
-                }
-                for (GovDocument document : result.getFiles()) {
-                    expressionCount += document.getExpressionCount(expression);
-                }
-                totalMatchesByExpression.put(expression, expressionCount);
-            }
-        }
-
-        Row row = sheet.createRow(0);
-        Cell cell1 = row.createCell(0);
-        cell1.setCellValue("Arquivos analisados: ");
-        Cell cell2 = row.createCell(1);
-        cell2.setCellValue(totalSearchedFiles);
-        Row row2 = sheet.createRow(1);
-        Cell cell3 = row2.createCell(0);
-        cell3.setCellValue("Arquivos contendo pelo menos uma das expressões: ");
-        Cell cell4 = row2.createCell(1);
-        cell4.setCellValue(totalMatchedFiles);
-        for (int i = 0; i < 4; i++) {
-            sheet.autoSizeColumn(i);
-        }
-        int i = 2;
-        for (Map.Entry<String, Integer> entry : totalMatchesByExpression.entrySet()) {
-            Row expressionRow = sheet.createRow(i);
-            Cell expressionCell = expressionRow.createCell(0);
-            expressionCell.setCellValue(entry.getKey());
-            Cell countCell = expressionRow.createCell(1);
-            countCell.setCellValue(entry.getValue());
-            i += 1;
-        }
+        AnalysisResult totalResult = AnalysisResult.totalizeResults(results);
+        printResultOnSheet(totalResult, sheet);
     }
 
     private void generateErrorSheet(Workbook workbook, List<String> errors) {
@@ -103,25 +71,36 @@ public class ExcelHelper {
         }
     }
 
-    private void createTotalColumns(AnalysisResult result, Sheet sheet) {
-        Row row = sheet.createRow(0);
+    private Integer createTotalColumns(AnalysisResult result, Sheet sheet, Integer line) {
+        Row row = sheet.createRow(line++);
         Cell cell1 = row.createCell(0);
         cell1.setCellValue("Arquivos analisados:");
         Cell cell2 = row.createCell(1);
         cell2.setCellValue(result.getTotalFiles());
-        Row row2 = sheet.createRow(1);
+        Row row2 = sheet.createRow(line++);
         Cell cell3 = row2.createCell(0);
         cell3.setCellValue("Arquivos contendo pelo menos uma das expressões:");
         Cell cell4 = row2.createCell(1);
         cell4.setCellValue(result.getFilesContainingKeywords());
+
+        for(String expression : result.getSearchExpressions()) {
+            Row expressionRow = sheet.createRow(line++);
+            Cell expressionCell = expressionRow.createCell(0);
+            expressionCell.setCellValue(expression);
+            Cell countCell = expressionRow.createCell(1);
+            countCell.setCellValue(result.getExpressionCount(expression));
+        }
+
+        return line;
     }
 
-    private void createBlankRow(Sheet sheet) {
-        sheet.createRow(2);
+    private Integer createBlankRow(Sheet sheet, Integer row) {
+        sheet.createRow(row++);
+        return row;
     }
 
-    private int createDocumentHeader(Sheet sheet, List<String> expressions) {
-        Row row = sheet.createRow(3);
+    private int createDocumentHeader(Sheet sheet, List<String> expressions, Integer line) {
+        Row row = sheet.createRow(line);
 
         List<Object> objects = new ArrayList<>();
         objects.add("Tipo de norma");
@@ -141,8 +120,8 @@ public class ExcelHelper {
         return objects.size();
     }
 
-    private void createDocumentResultRow(GovDocument document, List<String> expressions, Sheet sheet, int rowNumber) {
-        Row row = sheet.createRow(rowNumber);
+    private Integer createDocumentResultRow(GovDocument document, List<String> expressions, Sheet sheet, Integer rowNumber) {
+        Row row = sheet.createRow(rowNumber++);
 
         List<Object> objects = new ArrayList<>();
         objects.add(document.getName());
@@ -161,6 +140,8 @@ public class ExcelHelper {
             Cell cell = row.createCell(i);
             cell.setCellValue(objects.get(i).toString());
         }
+
+        return rowNumber;
     }
 
 }
