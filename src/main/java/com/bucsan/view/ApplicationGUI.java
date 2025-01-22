@@ -82,7 +82,7 @@ public class ApplicationGUI {
     private void createDirectoryButton(GridBagConstraints gbc, JFrame frame, JTextField directoryField) {
         JButton browseButton = new JButton("Procurar");
         gbc.gridx = 1;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         frame.add(browseButton, gbc);
 
         browseButton.addActionListener(e -> {

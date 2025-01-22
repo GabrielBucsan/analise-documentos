@@ -117,6 +117,8 @@ public class ExcelHelper {
             cell.setCellValue(objects.get(i).toString());
         }
 
+        sheet.createFreezePane(0, line + 1);
+
         return objects.size();
     }
 
