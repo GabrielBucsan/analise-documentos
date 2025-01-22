@@ -1,5 +1,7 @@
 package com.bucsan.analysis;
 
+import com.bucsan.view.AnalysisProgressBar;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +60,7 @@ public class AnalysisHelper {
                         }
                     }
                     result.countFile();
+                    AnalysisProgressBar.getInstance().increment();
                 });
             }
         } catch (IOException e) {

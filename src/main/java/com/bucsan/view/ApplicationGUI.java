@@ -55,6 +55,8 @@ public class ApplicationGUI {
                 executeButton.setEnabled(false);
                 executeButton.setText("Análise em andamento");
 
+                AnalysisProgressBar bar = getAnalysisProgressBar(gbc, frame, directoryPath);
+
                 new Thread(() -> {
                     try (Stream<Path> paths = Files.list(new File(directoryPath).toPath())) {
                         paths.filter(Files::isDirectory)
@@ -66,11 +68,20 @@ public class ApplicationGUI {
                             executeButton.setEnabled(true);
                             executeButton.setText("Executar");
                             JOptionPane.showMessageDialog(frame, "Análise concluída!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                            frame.remove(bar.getProgressBar());
                         });
                     }
                 }).start();
             }
         });
+    }
+
+    private AnalysisProgressBar getAnalysisProgressBar(GridBagConstraints gbc, JFrame frame, String directoryPath) {
+        AnalysisProgressBar bar = AnalysisProgressBar.initializeBar(fileHelper.countXmlFiles(directoryPath));
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        frame.add(bar.getProgressBar(), gbc);
+        return bar;
     }
 
     private void doAnalysis(SearchExpressions expressions, Path directory) {

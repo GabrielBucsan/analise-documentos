@@ -10,8 +10,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.stream.Stream;
 
 public class FileHelper {
 
@@ -120,6 +121,26 @@ public class FileHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public int countXmlFiles(String directoryPath) {
+        Path path = Paths.get(directoryPath);
+        final int[] count = {0};
+
+        try {
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (file.toString().endsWith("xml")) {
+                        count[0]++;
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+        }
+
+        return count[0];
     }
 
     public String loadDirectoryPath() {
