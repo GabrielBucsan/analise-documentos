@@ -86,4 +86,8 @@ public class GovDocument {
     public String getArquivo() {
         return arquivo;
     }
+
+    public boolean hasNoEmenta() {
+        return ementa == null || ementa.isEmpty();
+    }
 }

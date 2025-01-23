@@ -77,11 +77,18 @@ public class ExcelHelper {
         cell1.setCellValue("Arquivos analisados:");
         Cell cell2 = row.createCell(1);
         cell2.setCellValue(result.getTotalFiles());
+
         Row row2 = sheet.createRow(line++);
         Cell cell3 = row2.createCell(0);
         cell3.setCellValue("Arquivos contendo pelo menos uma das expressões:");
         Cell cell4 = row2.createCell(1);
         cell4.setCellValue(result.getFilesContainingKeywords());
+
+        Row row3 = sheet.createRow(line++);
+        Cell cell5 = row3.createCell(0);
+        cell5.setCellValue("Arquivos com o campo Ementa vazio ou em branco:");
+        Cell cell6 = row3.createCell(1);
+        cell6.setCellValue(result.getFilesWithoutEmenta());
 
         for(String expression : result.getSearchExpressions()) {
             Row expressionRow = sheet.createRow(line++);
