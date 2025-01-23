@@ -10,6 +10,7 @@ public class AnalysisResult {
     String folderName;
     int totalFiles = 0;
     int filesContainingKeywords = 0;
+    int filesWithoutEmenta = 0;
     List<GovDocument> files = new ArrayList<>();
     SearchExpressions expressions;
     List<String> errors = new ArrayList<>();
@@ -31,6 +32,10 @@ public class AnalysisResult {
         files.add(document);
     }
 
+    public void countFileWithoutEmenta() {
+        filesWithoutEmenta++;
+    }
+
     public void addError(String error) {
         this.errors.add(error);
     }
@@ -49,6 +54,10 @@ public class AnalysisResult {
 
     public int getFilesContainingKeywords() {
         return this.filesContainingKeywords;
+    }
+
+    public int getFilesWithoutEmenta() {
+        return filesWithoutEmenta;
     }
 
     public List<String> getErrors() {
@@ -75,6 +84,7 @@ public class AnalysisResult {
             totalResult.files.addAll(result.getFiles());
             totalResult.totalFiles += result.getTotalFiles();
             totalResult.filesContainingKeywords += result.filesContainingKeywords;
+            totalResult.filesWithoutEmenta += result.filesWithoutEmenta;
             if(firstTime) {
                 firstTime = false;
                 totalResult.expressions = result.expressions;

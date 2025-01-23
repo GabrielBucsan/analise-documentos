@@ -58,6 +58,10 @@ public class AnalysisHelper {
                                 result.countFileContainingKeyword(documento);
                             }
                         }
+
+                        if(documento.hasNoEmenta()) {
+                            result.countFileWithoutEmenta();
+                        }
                     }
                     result.countFile();
                     AnalysisProgressBar.getInstance().increment();
