@@ -2,7 +2,7 @@ package com.bucsan.view;
 
 import com.bucsan.analysis.AnalysisHelper;
 import com.bucsan.analysis.AnalysisResult;
-import com.bucsan.analysis.FileHelper;
+import com.bucsan.utils.FileHelper;
 import com.bucsan.analysis.SearchExpressions;
 
 import javax.swing.*;

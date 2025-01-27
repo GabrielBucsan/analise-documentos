@@ -1,5 +1,6 @@
 package com.bucsan.analysis;
 
+import com.bucsan.utils.FileHelper;
 import com.bucsan.view.AnalysisProgressBar;
 
 import java.io.IOException;
@@ -38,8 +39,8 @@ public class AnalysisHelper {
         Path mainDirectory = Paths.get(folderPath.toUri());
 
         try {
-            try (Stream<Path> subFolders = Files.list(mainDirectory)) {
-                subFolders.filter(Files::isRegularFile)
+            try (Stream<Path> files = Files.list(mainDirectory)) {
+                files.filter(Files::isRegularFile)
                 .forEach(file -> {
                     GovDocument documento = null;
                     try {

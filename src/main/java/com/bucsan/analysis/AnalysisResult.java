@@ -88,6 +88,7 @@ public class AnalysisResult {
             if(firstTime) {
                 firstTime = false;
                 totalResult.expressions = result.expressions;
+                totalResult.folderName = result.folderName;
             }
         }
 

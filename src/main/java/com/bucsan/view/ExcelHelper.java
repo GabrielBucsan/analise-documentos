@@ -1,7 +1,7 @@
 package com.bucsan.view;
 
 import com.bucsan.analysis.AnalysisResult;
-import com.bucsan.analysis.FileHelper;
+import com.bucsan.utils.FileHelper;
 import com.bucsan.analysis.GovDocument;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -59,6 +59,15 @@ public class ExcelHelper {
         Sheet sheet = workbook.createSheet("Totais");
         AnalysisResult totalResult = AnalysisResult.totalizeResults(results);
         printResultOnSheet(totalResult, sheet);
+        createHTMLFiles(totalResult);
+    }
+
+    private void createHTMLFiles(AnalysisResult result) {
+        FileHelper helper = new FileHelper();
+        helper.clearHTMLFiles(result.getFolderName());
+        for(GovDocument document : result.getFiles()) {
+            helper.createViewFile(result.getFolderName(), document.getIdentifica(), document.getTexto());
+        }
     }
 
     private void generateErrorSheet(Workbook workbook, List<String> errors) {

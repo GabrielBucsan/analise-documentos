@@ -1,5 +1,7 @@
-package com.bucsan.analysis;
+package com.bucsan.utils;
 
+import com.bucsan.analysis.GovDocument;
+import com.bucsan.analysis.SearchExpressions;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,13 +14,18 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.stream.Stream;
 
 public class FileHelper {
 
     String errorExtension = ".err";
     String saveFileName = "searchData.sav";
     String xlsxExtension = ".xlsx";
+    String viewFileDirectory;
+    String viewFileExtension = ".html";
+
+    public FileHelper() {
+        this.viewFileDirectory = Paths.get("").toAbsolutePath() + "/visualizacao";
+    }
 
     public GovDocument readXmlFile(Path file) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -42,7 +49,6 @@ public class FileHelper {
 
         GovDocument govDocument = new GovDocument();
 
-        // Lê os elementos <article>
         NodeList articles = document.getElementsByTagName("article");
 
         for (int i = 0; i < articles.getLength(); i++) {
@@ -90,6 +96,14 @@ public class FileHelper {
     }
 
     public void clearErros(String directoryPath) {
+        clearFilesFromDirectoryWithExtension(directoryPath, errorExtension);
+    }
+
+    public void clearHTMLFiles(String directory) {
+        clearFilesFromDirectoryWithExtension(viewFileDirectory + "/" + directory, viewFileExtension);
+    }
+
+    public void clearFilesFromDirectoryWithExtension(String directoryPath, String extension) {
         File diretorio = new File(directoryPath);
 
         if (!diretorio.exists() || !diretorio.isDirectory()) {
@@ -97,10 +111,10 @@ public class FileHelper {
             return;
         }
 
-        File[] arquivos = diretorio.listFiles((dir, nome) -> nome.endsWith(errorExtension));
+        File[] arquivos = diretorio.listFiles((dir, nome) -> nome.endsWith(extension));
 
         if (arquivos == null || arquivos.length == 0) {
-            System.out.println("Nenhum arquivo com a extensão " + errorExtension + " foi encontrado.");
+            System.out.println("Nenhum arquivo com a extensão " + extension + " foi encontrado.");
             return;
         }
 
@@ -169,6 +183,37 @@ public class FileHelper {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public void createViewFile(String directory, String fileName, String text) {
+
+        String dir = viewFileDirectory + "/" + directory.substring(directory.length() - 4) + "/";
+
+        Path path = Paths.get(dir);
+        if (!Files.exists(path)) {
+            try {
+                Files.createDirectories(path);
+                System.out.println("Diretório criado: " + dir);
+            } catch (IOException e) {
+                System.err.println("Erro ao criar diretório: " + e.getMessage());
+                return;
+            }
+        }
+
+        try (FileWriter writer = new FileWriter(dir + fileName.replace("*", "").replace(" ", "_") + viewFileExtension)) {
+            writer.write(String.format("<!DOCTYPE html>\n" +
+                    "<html lang=\"pt-BR\">\n" +
+                    "<head>\n" +
+                    "    <meta charset=\"ISO_8859_1\">\n" +
+                    "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                    "    <title>Simple HTML Template</title>\n" +
+                    "</head>\n" +
+                    "<body>", fileName));
+            writer.write(text);
+            writer.write("</body>");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
