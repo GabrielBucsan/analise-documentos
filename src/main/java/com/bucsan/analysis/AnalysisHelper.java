@@ -52,15 +52,11 @@ public class AnalysisHelper {
                         if(hasExpressionInString(documento.getTexto(), documento, expressions.getSearchExpressions())) {
                             if(expressions.hasResponsibleSearchExpressions()) {
                                 if(hasExpressionInString(documento.getArtCategory(), documento, expressions.getResponsibleSearchExpressions())) {
-                                    result.countFileContainingKeyword(documento);
+                                    countFile(result, documento);
                                 }
                             } else {
-                                result.countFileContainingKeyword(documento);
+                                countFile(result, documento);
                             }
-                        }
-
-                        if(documento.hasNoEmenta()) {
-                            result.countFileWithoutEmenta();
                         }
                     }
                     result.countFile();
@@ -72,6 +68,13 @@ public class AnalysisHelper {
         }
 
         return result;
+    }
+
+    private void countFile(AnalysisResult result, GovDocument documento) {
+        result.countFileContainingKeyword(documento);
+        if(documento.hasNoEmenta()) {
+            result.countFileWithoutEmenta();
+        }
     }
 
     private boolean hasExpressionInString(String texto, GovDocument document, String[] expressoesChave) {
