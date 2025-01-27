@@ -206,7 +206,7 @@ public class FileHelper {
                     "<head>\n" +
                     "    <meta charset=\"ISO_8859_1\">\n" +
                     "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
-                    "    <title>Simple HTML Template</title>\n" +
+                    "    <title>%s</title>\n" +
                     "</head>\n" +
                     "<body>", fileName));
             writer.write(text);
